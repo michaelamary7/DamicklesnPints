@@ -4,6 +4,7 @@ body {
     padding: 0;
     background-color: #f9f9f9;
     color: #333;
+    transition: background-color 0.5s, color 0.5s;
 }
 
 header {
@@ -26,6 +27,11 @@ header nav ul li {
 header nav ul li a {
     color: #fff;
     text-decoration: none;
+    transition: color 0.3s;
+}
+
+header nav ul li a:hover {
+    color: #f39c12;
 }
 
 main {
@@ -41,6 +47,11 @@ img {
     max-width: 100%;
     height: auto;
     margin-top: 10px;
+    transition: transform 0.5s ease;
+}
+
+img:hover {
+    transform: scale(1.1);
 }
 
 footer {
@@ -51,4 +62,15 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
+}
+
+/* Dark Theme */
+body.dark-theme {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-theme header,
+body.dark-theme footer {
+    background-color: #000;
 }

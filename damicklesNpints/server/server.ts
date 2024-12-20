@@ -6,7 +6,7 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 
 // import the two parts of a graphQL schema
-import { typeDefs, resolvers } from './schemas/index.js';
+import { typeDefs, resolvers } from './src/schemas/index.js';
 
 const server = new ApolloServer({
   typeDefs,

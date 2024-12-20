@@ -1,11 +1,11 @@
 import express from 'express';
 import db from './src/config/connection.js';
 
-// Import the ApolloServer class
+// import the apolloServer class
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 
-// Import the two parts of a GraphQL schema
+// import the two parts of a graphQL schema
 import { typeDefs, resolvers } from './schemas/index.js';
 
 const server = new ApolloServer({
@@ -13,7 +13,7 @@ const server = new ApolloServer({
   resolvers,
 });
 
-// Create a new instance of an Apollo server with the GraphQL schema
+// create a new instance of an apollo server with the GraphQL schema
 const startApolloServer = async () => {
 
   await server.start();
@@ -33,5 +33,5 @@ const startApolloServer = async () => {
   });
 };
 
-// Call the async function to start the server
+// call the async function to start the server
 startApolloServer();

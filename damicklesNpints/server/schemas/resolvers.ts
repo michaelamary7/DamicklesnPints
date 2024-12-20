@@ -1,4 +1,4 @@
-import { MenuItem, Category } from '../models';
+import { MenuItem, Category } from '../src/models';
 
 export const resolvers = {
   Query: {

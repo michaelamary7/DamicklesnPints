@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, Document } from 'mongoose';
 
 export interface ReservationDocument extends Document {
     reservationId: string;

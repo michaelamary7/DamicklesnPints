@@ -5,6 +5,7 @@ interface IMenuItem extends Document {
   description: string;
   price: number;
   category: Schema.Types.ObjectId;
+  isAvailable: boolean;
   image: string;
   nutritionalInfo: {
     calories: number;
@@ -33,6 +34,10 @@ const classSchema = new Schema<IMenuItem>(
     category: {
       type: Schema.Types.ObjectId,
       ref: 'Professor',
+    },
+    isAvailable: {
+      type: Boolean,
+      default: true,
     },
     image: {
       type: String,

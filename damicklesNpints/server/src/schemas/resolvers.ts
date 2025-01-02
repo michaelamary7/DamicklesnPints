@@ -1,4 +1,7 @@
-import { MenuItem, Category } from '../src/models';
+import MenuItem from '../models/MenuItem';
+import Category from '../models/Category';
+import User  from '../models/User.js';
+import { signToken, AuthenticationError } from '../services/auth.js';
 
 export const resolvers = {
   Query: {
@@ -16,7 +19,25 @@ export const resolvers = {
     }
   },
 
-  Mutation: {
+  Mutation: {    
+    login: async (_: any, { email, password }: { email: string, password: string }) => {
+      const user = await User.findOne({ email });
+
+      if (!user) {
+          throw new AuthenticationError('Could not Authenticate user.');
+      }
+
+      const correctPw = await user.isCorrectPassword(password);
+
+      if (!correctPw) {
+          throw new AuthenticationError('Could not Authenticate user.');
+      }
+
+      const token = signToken(user.username, user.email, user._id);
+
+      return { token, user };
+
+    },
     addMenuItem: async (_: any, { input }: { input: any }) => {
       const menuItem = new MenuItem(input);
       return await menuItem.save();

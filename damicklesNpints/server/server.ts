@@ -1,12 +1,12 @@
 import express from 'express';
-import db from './src/config/connection.js';
+import db from './config/connection.js';
 
 // import the apolloServer class
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 
 // import the two parts of a graphQL schema
-import { typeDefs, resolvers } from './src/schemas/index.js';
+import { typeDefs, resolvers } from './schemas/index.js';
 
 const server = new ApolloServer({
   typeDefs,

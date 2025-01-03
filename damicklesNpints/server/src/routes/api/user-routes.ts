@@ -10,7 +10,7 @@ import {
   updateReservation,
   removeReservation,
   login,
-} from '../../controllers/user-controller.js';
+} from '../../controllers/user-controllers.js';
 
 // import middleware
 import { authenticateToken } from '../../services/auth.js';

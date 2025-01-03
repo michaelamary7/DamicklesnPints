@@ -6,7 +6,7 @@ import reservationSchema from './Reservation';
 import { MenuDocument } from './Menu';
 import { ReservationDocument } from './Reservation';
 
-export interface UserDocument extends Document {
+interface UserDocument extends Document {
   id: string;
   username: string;
   email: string;
@@ -58,6 +58,7 @@ userSchema.methods.isCorrectPassword = async function (password: string) {
 
 const User = model<UserDocument>('User', userSchema);
 
+export { userSchema };
 export default User;
   
   

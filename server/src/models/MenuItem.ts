@@ -15,7 +15,7 @@ interface IMenuItem extends Document {
   };
 }
 
-const classSchema = new Schema<IMenuItem>(
+const menuSchema = new Schema<IMenuItem>(
   {
     name: {
       type: String,
@@ -67,6 +67,6 @@ const classSchema = new Schema<IMenuItem>(
   }
 );
 
-const Class = model<IMenuItem>('MenuItems', classSchema);
+const Menu = model<IMenuItem>('MenuItems', menuSchema);
 
-export default Class;
+export default Menu;

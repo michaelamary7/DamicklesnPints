@@ -5,13 +5,15 @@ import './index.css'
 
 import Homepage from './pages/HomePage.tsx'
 import Login from './pages/LoginForm.tsx'
-
+import ErrorPage from './pages/ErrorPage.tsx'
+import MenuPage from './pages/MenuPage.tsx'
+import ReservationPage from './pages/ReservationPage.tsx'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
-    errorElement: <h1 className='display-2'>Wrong page!</h1>,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
@@ -19,6 +21,12 @@ const router = createBrowserRouter([
       },{
         path: '/login',
         element: <Login />  
+      },{
+        path: '/menu',
+        element: <MenuPage />
+      },{
+        path: '/reservation',
+        element: <ReservationPage />
       }
     ]
   }

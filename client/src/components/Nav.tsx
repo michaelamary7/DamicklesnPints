@@ -1,9 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate, NavLink, useLocation } from 'react-router-dom';
 import auth from '../utils/auth';
 
 const Navbar = () => {
+  const location = useLocation();
   const [ loginCheck, setLoginCheck ] = useState(false);
+
+  if (!auth.loggedIn() || location.pathname === '/') {
+    return null;
+  }
+ 
 
   const checkLogin = () => {
     if(auth.loggedIn()) {
@@ -21,7 +28,7 @@ const Navbar = () => {
       <div className='nav-title'>
       <Link to='/' style={{ display: 'flex', alignItems: 'center' }}>
           <img 
-            src="./public/images/DamicklesnPints.png" 
+            src="./images/DamicklesnPints.png" 
             alt="DamicklesnPints"
             style={{
               height: '64px', 
@@ -40,11 +47,19 @@ const Navbar = () => {
             </button>
           </li>
         ) : (
-          <li className='nav-item'>
-            <button type='button' onClick={() => {
-              auth.logout();
-            }}>Logout</button>
-          </li>
+          <>
+            <li className='nav-item'>
+              <Link to='/menu' className='nav-link'>My Menus</Link>
+            </li>
+            <li className='nav-item'>
+              <Link to='/reservation' className='nav-link'>Reservation Management</Link>
+            </li>
+            <li className='nav-item'>
+              <button type='button' onClick={() => {
+                auth.logout();
+              }}>Logout</button>
+            </li>
+          </>
         )
       }
       </ul>

@@ -1,4 +1,5 @@
 import { useEffect, useState, useLayoutEffect } from 'react';
+import { Link } from 'react-router-dom';
 import ErrorPage from '../pages/ErrorPage';
 import auth from '../utils/auth';
 import MenuItems from '../components/MenuItems';
@@ -53,6 +54,12 @@ const HomePage = () => {
             <section className="menu-section">
              <h2>Trending Restaurant Menus</h2>
              <TrendingMenu />
+            </section>
+          </main>
+          <main className="main-content">
+            <section className="menu-section">
+              <h2>Explore More Menus</h2>
+              <Link to='/menu'>Menu</Link>
             </section>
           </main>
         </div>  

@@ -84,6 +84,21 @@ export const deleteReservation = (reservationId: string, token: string) => {
     });
 }
 
+export const createReservation = async (reservation: any) => {
+  const response = await fetch('/api/users/reservations', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reservation),
+  });
+
+  if (!response.ok) {
+      throw new Error('Failed to create reservation');
+  }
+
+  return response.json();
+}
 
       
 

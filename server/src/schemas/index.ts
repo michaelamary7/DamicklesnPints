@@ -1,6 +1,6 @@
-import { typeDefs } from './typeDefs';
+import { typeDefs } from './typeDefs.js';
 
-import { resolvers } from './resolvers';
+import { resolvers } from './resolvers.js';
 
 
 

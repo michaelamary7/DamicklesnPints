@@ -10,6 +10,7 @@ import {
   updateReservation,
   removeReservation,
   login,
+  getTrendingMenu
 } from '../../controllers/user-controller.js';
 
 // import middleware
@@ -31,6 +32,8 @@ router.route('/reservations/:reservationId').delete(authenticateToken, removeRes
 router.route('/reservations/:reservationId').put(authenticateToken, updateReservation);
 
 router.route('/reservations').post(authenticateToken, saveReservation);
+
+router.route('/trending-menu').get(getTrendingMenu);
 
 
 

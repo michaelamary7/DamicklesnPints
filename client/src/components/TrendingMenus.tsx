@@ -1,15 +1,20 @@
-import React from 'react';
-import { Card, Row, Col, Tag, Typography, Image } from 'antd';
+import React, { useState } from 'react';
+import { Card, Row, Col, Tag, Typography, Image, Button } from 'antd';
 import { RiseOutlined } from '@ant-design/icons';
+import ReservationModal from './ReservationModal';
 
 const { Title, Text } = Typography;
 
 const TrendingMenu: React.FC = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedRestaurant, setSelectedRestaurant] = useState('');
+
   const menuItems = [
     {
       id: 1,
       name: "Truffle Burger",
       restaurant: "Gourmet Bites",
+      restaurantId: "gb-001",
       location: "New York",
       price: 16.99,
       description: "Premium beef patty topped with truffle mayo, caramelized onions, and aged cheddar",
@@ -20,6 +25,7 @@ const TrendingMenu: React.FC = () => {
       id: 2,
       name: "Poke Bowl",
       restaurant: "Ocean Fresh",
+      restaurantId: "of-001",
       location: "Los Angeles",
       price: 18.99,
       description: "Fresh tuna, avocado, edamame on sushi rice with house special sauce",
@@ -30,6 +36,7 @@ const TrendingMenu: React.FC = () => {
       id: 3,
       name: "Butternut Ravioli",
       restaurant: "Pasta Paradise",
+      restaurantId: "pp-001",
       location: "Chicago",
       price: 19.99,
       description: "Handmade ravioli filled with roasted butternut squash in sage butter sauce",
@@ -37,6 +44,12 @@ const TrendingMenu: React.FC = () => {
       imageUrl: "https://cdn.loveandlemons.com/wp-content/uploads/2020/10/butternut-squash-ravioli.jpg"
     }
   ];
+
+  const handleReservationSubmit = async (reservationData: any) => {
+    // Handle the reservation submission here
+    console.log('Reservation data:', reservationData);
+    // await yourApiCall(reservationData);
+  };
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
@@ -81,13 +94,31 @@ const TrendingMenu: React.FC = () => {
                 {item.description}
               </Text>
 
-              <Text type="secondary" strong style={{ display: 'block', marginTop: '12px' }}> Location: 
+              <Text type="secondary" strong style={{ display: 'block', marginTop: '12px', marginBottom: '12px' }}> Location: 
                 {item.location}
               </Text>
+
+              <Button 
+                type="link" 
+                style={{ padding: 0 }}
+                onClick={() => {
+                  setSelectedRestaurant(item.restaurantId);
+                  setIsModalVisible(true);
+                }}
+              >
+                Make Reservation at {item.restaurant}
+              </Button>
             </Card>
           </Col>
         ))}
       </Row>
+
+      <ReservationModal
+        isVisible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        restaurantId={selectedRestaurant}
+        onSubmit={handleReservationSubmit}
+      />
     </div>
   );
 };

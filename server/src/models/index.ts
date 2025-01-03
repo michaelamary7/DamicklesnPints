@@ -1,3 +1,4 @@
 import User from './User.js';
+import UserDocument from './User.js';
 
-export default { User };
+export { User, type UserDocument };

@@ -137,3 +137,14 @@ export const updateReservation = async (req: Request, res: Response) => {
     }
 }
 
+export const getTrendingMenu = async (req: Request, res: Response) => {
+    try {
+        const menuItems = await User.findOne({
+            $or: [{ _id: req.user ? req.user._id : req.params.id }, { username: req.params.username }],
+          }).select('menuItem');
+        return res.json(menuItems);
+    } catch (err) {
+        console.log(err);
+        return res.status(400).json(err);
+    }   
+}

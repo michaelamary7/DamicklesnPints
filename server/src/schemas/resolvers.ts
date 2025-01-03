@@ -1,5 +1,5 @@
-import MenuItem from '../models/MenuItem';
-import Category from '../models/Category';
+import MenuItem from '../models/MenuItem.js';
+import Category from '../models/Category.js';
 import User  from '../models/User.js';
 import { signToken, AuthenticationError } from '../services/auth.js';
 

@@ -34,7 +34,7 @@ export const loginUser = (userData: User) => {
 
 // save menu data for a logged in user
 export const saveMenuItem = (menuData: MenuItem, token: string) => {
-  return fetch('/api/users', {
+  return fetch('/api/menu', {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ export const saveMenuItem = (menuData: MenuItem, token: string) => {
 };
 
 export const getMenuItems = (token: string) => {
-  return fetch('/api/users/menus', {
+  return fetch('/api/menu', {
     headers: {
       authorization: `Bearer ${token}`,
     },
@@ -54,7 +54,7 @@ export const getMenuItems = (token: string) => {
 
 // remove saved menu data for a logged in user
 export const deleteMenuItem = (menuId: string, token: string) => {
-  return fetch(`/api/users/menus/${menuId}`, {
+  return fetch(`/api/menu/${menuId}`, {
     method: 'DELETE',
     headers: {
       authorization: `Bearer ${token}`,
@@ -64,7 +64,7 @@ export const deleteMenuItem = (menuId: string, token: string) => {
 
 // save reservation data for a logged in user
 export const saveReservation = (reservationData: Reservation, token: string) => {
-  return fetch('/api/users', {
+  return fetch('/api/reservations', {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ export const saveReservation = (reservationData: Reservation, token: string) => 
 
 // remove saved reservation data for a logged in user
 export const deleteReservation = (reservationId: string, token: string) => {
-  return fetch(`/api/users/reservations/${reservationId}`, {
+  return fetch(`/api/reservations/${reservationId}`, {
     method: 'DELETE',
     headers: {
       authorization: `Bearer ${token}`,
@@ -85,7 +85,7 @@ export const deleteReservation = (reservationId: string, token: string) => {
 }
 
 export const createReservation = async (reservation: any) => {
-  const response = await fetch('/api/users/reservations', {
+  const response = await fetch('/api/reservations', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',

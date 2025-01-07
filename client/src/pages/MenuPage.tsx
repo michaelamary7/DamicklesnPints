@@ -50,7 +50,7 @@ const MenuPage: React.FC = () => {
 
   const [restaurantData, setRestaurantData] = useState({
     id: restaurantId,
-    name: 'Sample Restaurant',
+    name: 'Central Restaurant',
     owner: 'mock-owner-id',
     categories: ['Appetizers', 'Main Course', 'Desserts'],
     menuItems: [
@@ -61,7 +61,7 @@ const MenuPage: React.FC = () => {
         description: 'Juicy beef patty with fresh vegetables',
         category: 'Main Course',
         isAvailable: true,
-        imageUrl: '/api/placeholder/300/200'
+        imageUrl: 'https://dinnerthendessert.com/wp-content/uploads/2022/02/Classic-Burgers-8.jpg'
       },
       {
         id: 2,
@@ -70,7 +70,16 @@ const MenuPage: React.FC = () => {
         description: 'Fresh romaine lettuce with parmesan',
         category: 'Appetizers',
         isAvailable: true,
-        imageUrl: '/api/placeholder/300/200'
+        imageUrl: 'https://www.onceuponachef.com/images/2010/08/Homemade-Caesar-Salad-Dressing.jpg'
+      },
+      {
+        id: 3,
+        name: 'Cheesecake',
+        price: 5.99,
+        description: 'New York style cheesecake with strawberry topping',
+        category: 'Desserts',
+        isAvailable: true,
+        imageUrl: 'https://tornadoughalli.com/wp-content/uploads/2018/09/NEW-YORK-STYLE-CHEESECAKE2-2.jpg'
       }
     ]
   });
@@ -174,9 +183,9 @@ const MenuPage: React.FC = () => {
                       setIsModalVisible(true);
                     }} />,
                     <DeleteOutlined key="delete" onClick={() => handleDelete(item.id)} />,
-                    item.isAvailable ? 
-                      <CheckOutlined key="available" onClick={() => handleToggleAvailability(item.id)} /> :
-                      <StopOutlined key="unavailable" onClick={() => handleToggleAvailability(item.id)} />
+                    item.isAvailable ? (
+                      <CheckOutlined key="available" onClick={() => handleToggleAvailability(item.id)} /> ) : (
+                      <StopOutlined key="unavailable" onClick={() => handleToggleAvailability(item.id)} /> ),
                   ] : []}
                 >
                   <Meta
@@ -235,7 +244,6 @@ const MenuPage: React.FC = () => {
                 step={0.01}
                 style={{ width: '100%' }}
                 formatter={value => `$ ${value}`}
-                parser={value => value!.replace(/\$\s?|(,*)/g, '')}
               />
             </Form.Item>
 

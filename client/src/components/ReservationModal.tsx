@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Modal, Form, Input, DatePicker, TimePicker, InputNumber, Button, message } from 'antd';
 import dayjs from 'dayjs';
-import { createReservation } from '../utils/API';
+import axios from 'axios';
+//import { createReservation } from '../utils/API';
 
 
 interface ReservationModalProps {
   isVisible: boolean;
   onClose: () => void;
-  restaurantId: string;
+  restaurantId: number | null;
+  onSubmit: (reservationData: any) => Promise<void>;
 }
 
 const ReservationModal: React.FC<ReservationModalProps> = ({ isVisible, onClose, restaurantId }) => {
@@ -27,9 +29,8 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isVisible, onClose,
         createdAt: new Date().toISOString()
       };
 
-      // Send to your API
-      await createReservation(reservation);
-
+      // Send to API
+       await axios.post('/api/reservations', reservation);
       message.success('Reservation request submitted successfully!');
       form.resetFields();
       onClose();

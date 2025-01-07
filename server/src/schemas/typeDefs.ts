@@ -1,29 +1,24 @@
 export const typeDefs = `#graphql
+  type Query {
+    menus: [Menu]!
+    menu(_id:ID): Menu
+    menuItems: [MenuItem]!
+    menuItem(_id: ID!): MenuItem
+    reservations: [Reservation]!
+    getReservationsByStatus(status: ReservationStatus!): [Reservation]!
+    getReservation(_id: ID!): Reservation
+  }
+
   type MenuItem {
-    id: ID!
+    _id: ID!
     name: String!
     description: String!
     price: Float!
     category: String!
-    ingredients: [String!]!
+    imageURL: String!
     isAvailable: Boolean!
-    image: String
-    nutritionalInfo: NutritionalInfo
-    createdAt: String!
-  }
-
-  type NutritionalInfo {
-    calories: Int
-    protein: Float
-    carbohydrates: Float
-    fats: Float
-  }
-
-  type Category {
-    id: ID!
-    name: String!
-    description: String
-    displayOrder: Int
+    restaurantId: Restaurant!
+    trending: Boolean!
   }
 
   input MenuItemInput {
@@ -31,30 +26,79 @@ export const typeDefs = `#graphql
     description: String!
     price: Float!
     category: String!
-    ingredients: [String!]!
     isAvailable: Boolean
-    image: String
-    nutritionalInfo: NutritionalInfoInput
   }
 
-  input NutritionalInfoInput {
-    calories: Int
-    protein: Float
-    carbohydrates: Float
-    fats: Float
+  type Restaurant {
+    _id: ID!
+    name: String!
+    location: String!
   }
 
-  type Query {
-    menuItems: [MenuItem]!
-    menuItem(id: ID!): MenuItem
-    menuItemsByCategory(category: String!): [MenuItem]!
-    categories: [Category]!
+  type Menu {
+    _id: ID!
+    items: [MenuItem]!
+    restaurantId: Restaurant!
+    lastUpdated: String!
+  }
+
+  type Reservation {
+    _id: ID!
+    name: String!
+    email: String
+    phone: String!
+    date: String!
+    time: String!
+    guests: Int!
+    specialRequests: String
+    reservationId: String!
+    status: ReservationStatus!
+    createdAt: String!
+  }
+
+  enum ReservationStatus {
+    pending
+    confirmed
+    rejected
+  }
+
+  input ReservationInput {
+    name: String!
+    email: String
+    phone: String!
+    date: String!
+    time: String!
+    guests: Int!
+    specialRequests: String
+  }
+
+  type User {
+    _id: ID!
+    username: String!
+    email: String!
+  }
+
+  type Auth {
+    token: String!
+    user: User!
+  }
+
+  input CreateUserInput {
+    username: String!
+    email: String!
+    password: String!
   }
 
   type Mutation {
-    addMenuItem(input: MenuItemInput!): MenuItem!
-    updateMenuItem(id: ID!, input: MenuItemInput!): MenuItem!
-    deleteMenuItem(id: ID!): Boolean!
+    addMenuItem(input: MenuItemInput): MenuItem!
+    updateMenuItem(id: ID!, input: MenuItemInput): MenuItem!
+    deleteMenuItem(id: ID!): MenuItem!
     toggleMenuItemAvailability(id: ID!): MenuItem!
+    addReservation(input: ReservationInput): Reservation!
+    updateReservationStatus(reservationId: ID!, status: ReservationStatus!): Reservation!
+    login(email: String!, password: String!): Auth
+    createUser(input: CreateUserInput!): Auth
+    deleteReservation(reservationId: ID!): Reservation!
   }
+
 `;

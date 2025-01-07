@@ -1,57 +1,55 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import Auth from '../utils/auth';
-import { login } from "../utils/authAPI.ts";
+import { SIGNUP_USER, LOGIN_USER } from "../graphql/mutation";
+import { useMutation } from '@apollo/client';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
+  const [isLogin, setIsLogin] = useState(true);
+  const [loginMutation] = useMutation(LOGIN_USER);
+  const [signupMutation] = useMutation(SIGNUP_USER);
 
   const [formData, setFormData] = useState({
     username: '',
+    email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
+
   const [error, setError] = useState<string | null>(null);
 
-  // This function will update the form data when the user types
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
-  // This function will handle the login form submission
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-    try {
-      console.log('Submitting login form');
-      const { token, userId } = await login(formData);
-      console.log('Token received:', token ? 'Yes' : 'No');
+    setError(null);
 
-      if (!token || !userId) {
-        throw new Error('No token or user ID received');
+    try {
+      const { data } = await loginMutation({
+        variables: {
+          email: formData.email,
+          password: formData.password,
+        },
+      });
+
+      if (!data?.login) {
+        setError('Failed to login. Please try again.');
+        return;
       }
 
-      // Log the user in
-      Auth.login(token);
-
-      // Store userId in localStorage or pass it directly as state
-      localStorage.setItem('userId', userId); // Store userId in localStorage
-
-      // Navigate to Form and pass userId as state
-      console.log('Login successful, redirecting to /Form');
-      navigate('/Form', { state: { userId } }); // Updated to `/Form` with a capital F
-
-    } catch (err) {
+      const { token } = data.login;
+      localStorage.setItem('token', token);
+      window.dispatchEvent(new Event('authChange'));
+      navigate('/');
+    } catch (err: any) {
       console.error('Failed to login', err);
-      setError('Invalid username or password');
+      setError('Invalid email or password. Please try again.');
     }
   };
 
-  // This function will handle the signup form submission by sending a POST request to the /api/auth/register endpoint
   const handleSignup = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -67,84 +65,87 @@ const Login = () => {
     }
 
     try {
-      console.log('Submitting signup form');
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
+      const { data } = await signupMutation({
+        variables: {
+          input: {
           username: formData.username,
+          email: formData.email,
           password: formData.password,
-        }),
+          },
+        },
       });
-
-      await response.json();
-      console.log('Signup successful, please log in');
-      setFormData({ username: '', password: '', confirmPassword: '' });
-      setError('Account created! Please log in.');
-
+      const token = data.createUser.token;
+      localStorage.setItem('token', token);
+      console.log('Account created and you can now log in!');
+      navigate('/');
     } catch (err: any) {
       console.error('Failed to signup', err);
       setError('Failed to create account. Please try again.');
     }
   };
 
-  // This function will toggle the form between login and signup
   const toggleForm = () => {
     setIsLogin(!isLogin);
     setError(null);
-    setFormData({ username: '', password: '', confirmPassword: '' });
+    setFormData({ username: '', email: '', password: '', confirmPassword: '' });
   };
 
   return (
     <main>
-    <div className='form2'>
-      <form className='form' onSubmit={isLogin ? handleLogin : handleSignup}>
-        <h2 className="shadow-text">DamicklesnPints</h2>
-        <h1>{isLogin ? 'Login' : 'Create Account'}</h1>
-        <label>Username</label>
-        <input 
-          type='text'
-          name='username'
-          value={formData.username || ''}
-          onChange={handleChange}
-          required
-          minLength={3}
-        />
-      <label>Password</label>
-        <input 
-          type='password'
-          name='password'
-          value={formData.password || ''}
-          onChange={handleChange}
-          required
-          minLength={isLogin ? undefined : 8}
-        />
-        {!isLogin && (
-          <>
-            <label>Confirm Password</label>
-            <input 
-              type='password'
-              name='confirmPassword'
-              value={formData.confirmPassword || ''}
-              onChange={handleChange}
-              required
-            />
-          </>
-        )}
-        <button type='submit'>{isLogin ? 'Login' : 'Create Account'}</button>
-
-        <button type='button' onClick={toggleForm} className='toggle-button'>
-          {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Login'}
-        </button>
-        {error && <div className='error'>{error}</div>}
-      </form>
-    </div>
+      <div className="form2">
+        <form className="form" onSubmit={isLogin ? handleLogin : handleSignup}>
+          <h2 className="shadow-text">DamicklesnPints</h2>
+          <h1>{isLogin ? 'Login' : 'Create Account'}</h1>
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email || ''}
+            onChange={handleChange}
+            required
+          />
+          {!isLogin && (
+            <>
+              <label>Username</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username || ''}
+                onChange={handleChange}
+                required
+              />
+            </>
+          )}
+          <label>Password</label>
+          <input 
+            type="password"
+            name="password"
+            value={formData.password || ''}
+            onChange={handleChange}
+            required
+            minLength={isLogin ? undefined : 8}
+          />
+          {!isLogin && (
+            <>
+              <label>Confirm Password</label>
+              <input 
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword || ''}
+                onChange={handleChange}
+                required
+              />
+            </>
+          )}
+          <button type="submit">{isLogin ? 'Login' : 'Create Account'}</button>
+          <button type="button" onClick={toggleForm} className="toggle-button">
+            {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Login'}
+          </button>
+          {error && <div className="error">{error}</div>}
+        </form>
+      </div>
     </main>
-  )
+  );
 };
 
 export default Login;

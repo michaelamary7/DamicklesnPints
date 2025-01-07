@@ -1,60 +1,142 @@
-// use this to decode a token and get the user's information out of it
-import { type JwtPayload, jwtDecode } from 'jwt-decode';
+import { JwtPayload, jwtDecode } from 'jwt-decode';
 
-interface ExtendedJwt extends JwtPayload {
-  data:{
-    username:string,
-    email:string,
-    id:string
-  }
+interface UserPayload extends JwtPayload {
+  id: string;
+  username: string;
 }
 
-// create a new class to instantiate for a user
 class AuthService {
-  // get user data
-  getProfile() {
-    return jwtDecode<ExtendedJwt>(this.getToken() || '');
+  // This is the time in milliseconds before the user is logged out due to inactivity
+  private readonly INACTIVITY_TIMEOUT = 60 * 60 * 1000; // 1 hour in milliseconds
+  private inactivityTimer: NodeJS.Timeout | null = null;
+  private lastActivityTime: number = Date.now();
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      this.setupActivityMonitoring();
+    }
   }
 
-  // check if user's logged in
-  loggedIn() {
-    // Checks if there is a saved token and it's still valid
+  private setupActivityMonitoring(): void {
+    // Monitors user activity
+    ['mousedown', 'keydown', 'mousemove', 'touchstart', 'scroll'].forEach(eventType => {
+      window.addEventListener(eventType, () => this.resetInactivityTimer());
+    });
+
+    // Sets initial timer if user is logged in
+    if (this.loggedIn()) {
+      this.resetInactivityTimer();
+    }
+  }
+  // This resets the inactivity timer
+  private resetInactivityTimer(): void {
+    this.lastActivityTime = Date.now();
+    
+    if (this.inactivityTimer) {
+      clearTimeout(this.inactivityTimer);
+    }
+
+    this.inactivityTimer = setTimeout(() => {
+      console.log('User inactive for too long, logging out');
+      this.logout();
+    }, this.INACTIVITY_TIMEOUT);
+  }
+
+  // This decodes the token and returns the payload
+  getProfile(): UserPayload | null {
     const token = this.getToken();
-    return !!token && !this.isTokenExpired(token); // handwaiving here
+    return token ? jwtDecode<UserPayload>(token) : null;    
   }
 
-  // check if token is expired
-  isTokenExpired(token: string) {
+// This checks if a valid token exists and is not expired
+  loggedIn(): boolean {
+    const token = this.getToken();
+    if (!token) return false;
+
     try {
-      const decoded = jwtDecode<JwtPayload>(token);
-      if (decoded?.exp && decoded?.exp < Date.now() / 1000) {
-        return true;
-      } 
+      const decoded = jwtDecode<UserPayload>(token);
+      const currentTime = Date.now() / 1000;
+
+      // Checks both JWT expiration and inactivity
+      if (decoded.exp && decoded.exp < currentTime) {
+        console.log('Token expired');
+        this.logout();
+        return false;
+      }
       
-      return false;
+      const inactiveTime = Date.now() - this.lastActivityTime;
+      if (inactiveTime > this.INACTIVITY_TIMEOUT) {
+        console.log('Session expired due to inactivity');
+        this.logout();
+        return false;
+      }
+
+      return true;
     } catch (err) {
+      console.log('Error decoding token:', err);
+      this.logout();
       return false;
     }
   }
 
-  getToken() {
-    const loggedUser = localStorage.getItem('id_token');
-    // Retrieves the user token from localStorage
-    return loggedUser;
+  // This checks if the token is expired
+  isTokenExpired(token: string): boolean {
+    try {
+      const decoded = jwtDecode<UserPayload>(token);
+      if (decoded.exp && decoded.exp < Date.now() / 1000) {
+        console.log('Token expired');
+        this.logout();
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.log('Error decoding token:', err);
+      return true;
+    }
   }
 
-  login(idToken: string) {
-    // Saves user token to localStorage
+// This retrieves the token from local storage
+  getToken(): string | null{
+    return localStorage.getItem('id_token');
+  }
+
+// This stores the token in local storage and redirects to the dashboard page
+  login(idToken: string): void {
     localStorage.setItem('id_token', idToken);
+    this.lastActivityTime = Date.now();
+    this.resetInactivityTimer();
+    window.location.assign('/menu');
+  }
+
+  // This removes the token from local storage and redirects to the login page
+  logout(): void {
+    if (this.inactivityTimer) {
+      clearTimeout(this.inactivityTimer);
+      this.inactivityTimer = null;
+    }
+    
+    localStorage.removeItem('id_token');
+    this.lastActivityTime = 0;
+
     window.location.assign('/');
   }
 
-  logout() {
-    // Clear user token and profile data from localStorage
-    localStorage.removeItem('id_token');
-    // this will reload the page and reset the state of the application
-    window.location.assign('/');
+  // This retrieves the user from the token
+  getUser(): { id: string; username: string } | null {
+    const profile = this.getProfile();
+    return profile ? { id: profile.id, username: profile.username } : null;
   }
-}
+
+  // This checks if the user is authenticated and redirects if not
+  checkAuthAndRedirect(): boolean {
+    const token = this.getToken();
+    if (!token || this.isTokenExpired(token)) {
+      this.logout();
+      return false;
+    } 
+      return true;
+    }
+  }
+
 
 export default new AuthService();

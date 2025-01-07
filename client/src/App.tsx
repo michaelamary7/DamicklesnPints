@@ -3,11 +3,11 @@ import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@ap
 import { setContext } from '@apollo/client/link/context';
 import { Outlet } from 'react-router-dom';
 
-import Footer from './components/Footer';
-import Nav from './components/Nav';
+import Footer from './components/Footer.tsx';
+import Nav from './components/Nav.tsx';
 
 const httpLink = createHttpLink({
-  uri: '/graphql'
+  uri: 'http://localhost:3001/graphql'
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -28,11 +28,13 @@ const client = new ApolloClient({
 function App() {
   return (
     <ApolloProvider client={client}>
-      <Nav/>
-      <main>
-        <Outlet />
-      </main>
-      <Footer />
+      <div>
+        <Nav />
+        <main>
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
     </ApolloProvider>
   );
 }

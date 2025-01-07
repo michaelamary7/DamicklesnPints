@@ -1,5 +1,9 @@
 import express from 'express';
 import db from './config/connection.js';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import User from './models/User.js';
+dotenv.config();
 
 // import the apolloServer class
 import { ApolloServer } from '@apollo/server';
@@ -22,10 +26,15 @@ const startApolloServer = async () => {
   const PORT = process.env.PORT || 3001;
   const app = express();
 
+  app.use(cors());
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
 
-  app.use('/graphql', expressMiddleware(server));
+  app.use('/graphql', expressMiddleware(server, {
+    context: async () => ({
+      models: { User: User }
+    })
+  }));
 
   app.listen(PORT, () => {
     console.log(`API server running on port ${PORT}!`);

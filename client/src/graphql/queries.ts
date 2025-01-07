@@ -25,14 +25,28 @@ export const GET_ME = gql`
   }
 `;
 
-export const GET_USER_MENU = gql`
-  query GetUserMenu {
-    getUserMenu {
+export const GET_MENU_ITEMS = gql`
+  query GetMenuItems {
+    menuItems {
       id
       name
       description
       price
       category
+      isAvailable
+      imageURL
+      trending
+    }
+  }
+`;
+
+export const GET_USER_MENU = gql`
+  query GetUserMenu {
+    getUserMenu {
+      _id
+      name
+      description
+      price
     }
   }
 `;
@@ -52,4 +66,46 @@ export const GET_RESTAURANTS = gql`
       }
     }
   }
+`;
+
+export const GET_ALL_MENUS = gql`
+  query GetAllMenus {
+    menus {
+      _id
+      items {
+        _id
+        name
+        description
+        price
+        category
+        imageURL
+        isAvailable
+        trending
+      }
+      restaurantId {
+        _id
+        name
+        location
+      }
+      lastUpdated
+    }
+  }
+`;
+
+export const GET_TRENDING_MENU_ITEMS = gql`
+  query GetTrendingMenuItems {
+    menuItems {
+    _id
+    name
+    imageURL
+    price
+    description
+    trending
+    restaurantId {
+      _id
+      name
+      location
+    }
+  }
+}
 `;

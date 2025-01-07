@@ -36,6 +36,6 @@
 
     
   },
-  "include": ["src"],
+  "include": ["src", "../../New folder (2)/express"],
   "typeRoots": ["./node_modules/@types", "./src/types"]
 }

@@ -1,101 +1,78 @@
-import { useEffect, useState, useLayoutEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useQuery } from '@apollo/client';
 import ErrorPage from '../pages/ErrorPage';
 import auth from '../utils/auth';
 import MenuItems from '../components/MenuItems';
 import TrendingMenu from '../components/TrendingMenus';
-
+import { GET_MENU_ITEMS } from '../graphql/queries';
+import RestaurantMenus from '../components/RestaurantMenus';
 
 const HomePage = () => {
-  const [menuItems, setMenuItems] = useState<MenuItems[]>([]);
-  const [error, setError] = useState(false);
   const [loginCheck, setLoginCheck] = useState(false);
-
-  const checkLogin = () => {
-    if(auth.loggedIn()) {
-      setLoginCheck(true);
+  
+  // Replace manual fetching with Apollo useQuery
+  const { loading, error } = useQuery(GET_MENU_ITEMS, {
+    // Only fetch if user is logged in
+    skip: !loginCheck,
+    // Add auth token to requests
+    context: {
+      headers: {
+        authorization: `Bearer ${auth.getToken()}`
+      }
     }
-  };
-
-  const fetchTickets = async () => {
-    try {
-      const data = await retrieveMenuItems();
-      setMenuItems(data);
-    } catch (err) {
-      console.error('Failed to retrieve tickets:', err);
-      setError(true);
-    }
-  };
-
-
-  useLayoutEffect(() => {
-    checkLogin();
-  }, []);
+  });
 
   useEffect(() => {
-    if(loginCheck) {
-      fetchTickets();
-    }
-  }, [loginCheck]);
+    setLoginCheck(auth.loggedIn());
+  }, []);
 
   if (error) {
+    console.error('GraphQL error:', error);
     return <ErrorPage />;
   }
 
   return (
-    <>
-    {
-      !loginCheck ? (
-        <div className='login-notice'>
-          <h1>
+    <div className="min-h-screen bg-gray-50">
+      {!loginCheck ? (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <h1 className="text-4xl font-bold text-center text-gray-900 mb-8">
             Welcome to DamicklesnPints!
           </h1>
-          <main className="main-content">
-            <section className="menu-section">
-             <h2>Trending Restaurant Menus</h2>
-             <TrendingMenu />
+          
+          <main className="space-y-12">
+            <section className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+                Trending Restaurant Menus
+              </h2>
+              <TrendingMenu />
+            </section>
+
+            <section className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+                Explore More Menus
+              </h2>
+              <RestaurantMenus />
             </section>
           </main>
-          <main className="main-content">
-            <section className="menu-section">
-              <h2>Explore More Menus</h2>
-              <Link to='/menu'>Menu</Link>
-            </section>
-          </main>
-        </div>  
+        </div>
       ) : (
-          <div className='board'>
-            <main className="main-content">
-            <section className="menu-section">
-             <h2>Your Menu Items</h2>
-             <MenuItems />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <main>
+            <section className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+                Your Menu Items
+              </h2>
+              {loading ? (
+                <div className="text-center py-4">Loading menu items...</div>
+              ) : (
+                <MenuItems />
+              )}
             </section>
           </main>
-          </div>
-        )
-    }
-    </>
+        </div>
+      )}
+    </div>
   );
 };
 
 export default HomePage;
-import { getMenuItems } from '../utils/API';
-
-async function retrieveMenuItems(): Promise<MenuItems[]> {
-    try {
-        const token = auth.getToken();
-        if (!token) {
-            throw new Error('No token found');
-        }
-        const response = await getMenuItems(token);
-        if (!response.ok) {
-            throw new Error('Failed to fetch menu items');
-        }
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Error retrieving menu items:', error);
-        throw error;
-    }
-}
-

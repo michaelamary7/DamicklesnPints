@@ -1,64 +1,37 @@
-import { UserLogin } from "../users/UserLogin";
-import { jwtDecode } from 'jwt-decode';
+// resolvers/auth.ts
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
-// Defines the structure of the token payload
-interface TokenPayload {
-  id: string;  
-  username: string;
-}
-
-// Defines the structure of the API response
-interface LoginResponse {
-  token: string; // JWT token returned by the API
-}
-
-// Login function that sends a POST request to the /api/auth/login endpoint.
-// It returns the token and userId if the request is successful.
-export const login = async (userInfo: UserLogin) => {
-  console.log('Attempting login with:', {
-    username: userInfo.username,
-    passwordLength: userInfo.password ? userInfo.password.length : 'null'
-  });
-
-  try {
-    // Sends a POST request to the login endpoint
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userInfo),
-    });
-
-    console.log('Response status:', response.status);
-
-    // If the response is not successful, handles the error
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Login failed:', errorData);
-      if (response.status === 401) {
-        throw new Error('Invalid credentials');
+const authResolvers = {
+  Mutation: {
+    login: async (_: any, { username, password }: { username: string; password: string }, { models }: { models: any }) => {
+      const user = await models.User.findOne({ username });
+      
+      if (!user) {
+        throw new Error('User not found');
       }
-      throw new Error('Login Failed');
+
+      const validPassword = await bcrypt.compare(password, user.password);
+      
+      if (!validPassword) {
+        throw new Error('Invalid password');
+      }
+
+      const token = jwt.sign(
+        { id: user._id, username: user.username },
+        process.env.JWT_SECRET || (() => { throw new Error('JWT_SECRET is not defined'); })(),
+        { expiresIn: '24h' }
+      );
+
+      return {
+        token,
+        user: {
+          id: user._id,
+          username: user.username
+        }
+      };
     }
-
-    // Parses the response as a LoginResponse object
-    const data: LoginResponse = await response.json();
-    const token = data.token;
-    console.log('Login successful, token received:', token);
-
-    // Decode the JWT token to extract the userId and username
-    const decoded: TokenPayload = jwtDecode(token);
-    console.log('Decoded token payload:', decoded);
-
-    // Return the token and the extracted userId
-    return {
-      token: token,  // The JWT token itself
-      userId: decoded.id,  // Extracted userId from the token payload
-    };
-
-  } catch (error) {
-    console.error('Login error:', error);
-    throw error;  // Re-throw the error to handle it in the calling function
   }
 };
+
+export default authResolvers;

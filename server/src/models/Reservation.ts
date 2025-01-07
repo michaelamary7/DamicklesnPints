@@ -1,4 +1,4 @@
-import { Schema, Document } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
 export interface ReservationDocument extends Document {
     reservationId: string;
@@ -8,6 +8,9 @@ export interface ReservationDocument extends Document {
     date: string;
     time: string;
     guests: number;
+    specialRequests: string;
+    status: 'pending' | 'confirmed' | 'rejected';
+    createdAt: Date;
     }
 
 const reservationSchema = new Schema<ReservationDocument>({
@@ -34,10 +37,26 @@ const reservationSchema = new Schema<ReservationDocument>({
         type: Number,
         required: true,
     },
+    specialRequests: {
+        type: String,
+    },
     reservationId: {
         type: String,
         required: true,
     },
+    status: {
+        type: String,
+        enum: ['pending', 'confirmed', 'rejected'],
+        default: 'pending',
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+
 });
 
-export default reservationSchema;
+const Reservation = model<ReservationDocument>('Reservation', reservationSchema);
+
+export default Reservation;

@@ -1,4 +1,5 @@
-import type { Menu } from './Menu';
+import type { MenuItem } from './Menu';
+
 import type { Reservation } from './Reservation';
 
 export interface User {
@@ -6,6 +7,7 @@ export interface User {
     username: string;
     email: string;
     password: string;
-    menuItems: Menu[];
+    menuItems: MenuItem[];
     reservations: Reservation[];
 }
+

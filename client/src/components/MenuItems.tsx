@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { ADD_MENU_ITEM, UPDATE_MENU_ITEM, DELETE_MENU_ITEM } from '../utils/mutation';
-import { GET_USER_MENU } from '../utils/queries';
+import { ADD_MENU_ITEM, UPDATE_MENU_ITEM, DELETE_MENU_ITEM } from '../graphql/mutation';
+import { GET_USER_MENU } from '../graphql/queries';
 import { MenuItem } from '../models/Menu';
 
 
@@ -49,7 +49,7 @@ const MenuItems: React.FC = () => {
       if (editingItem) {
         await updateMenuItem({
           variables: {
-            id: editingItem.menuId,
+            id: editingItem.id,
             input: formData
           }
         });
@@ -94,14 +94,14 @@ const MenuItems: React.FC = () => {
           </thead>
           <tbody>
             {data?.getUserMenu.map((item: MenuItem) => (
-              <tr key={item.menuId}>
+              <tr key={item.id}>
                 <td>{item.name}</td>
                 <td>{item.description}</td>
                 <td>${Number(item.price).toFixed(2)}</td>
                 <td>{item.category}</td>
                 <td>
                   <button onClick={() => handleEdit(item)} className="edit-button">Edit</button>
-                  <button onClick={() => handleDelete(item.menuId)} className="delete-button">Delete</button>
+                  <button onClick={() => handleDelete(item.id)} className="delete-button">Delete</button>
                 </td>
               </tr>
             ))}

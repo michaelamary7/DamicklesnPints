@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Table, Tag, Button, Space, Modal, Typography, Tabs } from 'antd';
+import { Layout, Table, Tag, Button, Space, Modal, Typography, Tabs, message } from 'antd';
 import type { TableProps } from 'antd';
 import { CheckOutlined, CloseOutlined, MessageOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
@@ -86,7 +86,7 @@ const ReservationPage: React.FC = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => {
+      render: (status: 'pending' | 'confirmed' | 'rejected') => {
         const colors = {
           pending: 'gold',
           confirmed: 'green',

@@ -1,18 +1,13 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document, ObjectId } from 'mongoose';
 import bcrypt from 'bcrypt';
-
-import menuSchema from './Menu';
-import reservationSchema from './Reservation';
-import { MenuDocument } from './Menu';
-import { ReservationDocument } from './Reservation';
 
 interface UserDocument extends Document {
   id: string;
   username: string;
   email: string;
   password: string;
-  menuItems: MenuDocument[];
-  reservations: ReservationDocument[];
+  menuItems: ObjectId[];
+  reservations: ObjectId[];
   isCorrectPassword(password: string): Promise<boolean>;
 }
 
@@ -33,8 +28,18 @@ const userSchema = new Schema<UserDocument>(
       type: String,
       required: true,
     },
-    menuItems: [menuSchema],
-    reservations: [reservationSchema],
+    menuItems: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'MenuItem',
+      },
+    ],
+    reservations: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Reservation',
+      },
+    ],
   },
   {
     toJSON: {

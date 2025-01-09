@@ -3,6 +3,9 @@ import { Layout, Table, Tag, Button, Space, Modal, Typography, Tabs, message } f
 import type { TableProps } from 'antd';
 import { CheckOutlined, CloseOutlined, MessageOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { useQuery } from '@apollo/client';
+import { GET_RESERVATIONS } from '../graphql/queries';
+
 
 const { Header, Content } = Layout;
 const { Title } = Typography;
@@ -25,6 +28,17 @@ const ReservationPage: React.FC = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
   const [isDetailsVisible, setIsDetailsVisible] = useState(false);
+
+  const { loading, error, data } = useQuery(GET_RESERVATIONS);
+
+  if (loading) return <div>Loading reservations...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+ const reservation = data?.reservations || [];
+
+  if (reservation.length === 0) {
+    return <div>No reservations available right now.</div>;
+  }
 
   // Fetch reservations (mock data for example)
   useEffect(() => {

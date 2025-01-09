@@ -25,7 +25,7 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-function App() {
+const App: React.FC = () => {
   return (
     <ApolloProvider client={client}>
       <div>

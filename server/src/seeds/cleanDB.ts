@@ -1,19 +1,30 @@
-import TrendingMenus from '../models/index.js';
-import MenuItem from '../models/index.js';
+import MenuItem from '../models/MenuItem.js';
 import process from 'process';
 import User from '../models/User.js';
-import Menu from '../models/MenuItem.js';
+import Restaurant from '../models/Restaurant.js';
+import Reservation from '../models/Reservation.js';
 
-const cleanDB = async (): Promise<void> => {
+import db from '../config/connection.js';
+
+
+const cleanDB = async () => {
   try {
-    await TrendingMenus.TrendingMenus.deleteMany({});
-    await MenuItem.MenuItem.deleteMany({});
-    await User.deleteMany({});
-    await Menu.deleteMany({});
-    console.log('Trending Menus, User and Menu collection cleaned.');
+    // Connect to database
+    const connection = await db();
+    console.log('Connected to database');
 
-  } catch (err: unknown) {
-    console.error('Error cleaning collections:', err);
+    // Clean all collections
+    await Promise.all([
+      User.deleteMany({}),
+      Restaurant.deleteMany({}),
+      MenuItem.deleteMany({}),
+      Reservation.deleteMany({})
+    ]);
+
+    console.log('All collections cleaned successfully!');
+    await connection.close();
+  } catch (error) {
+    console.error('Error cleaning database:', error);
     process.exit(1);
   }
 };

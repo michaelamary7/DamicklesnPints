@@ -42,7 +42,6 @@ const reservationSchema = new Schema<ReservationDocument>({
     },
     reservationId: {
         type: String,
-        required: true,
     },
     status: {
         type: String,

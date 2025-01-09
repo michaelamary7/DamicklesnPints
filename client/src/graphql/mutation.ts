@@ -105,18 +105,19 @@ export const DELETE_MENU_ITEM = gql`
 `;
 
 
-export const CREATE_RESERVATION = gql`
-  mutation createReservation($input: ReservationInput!) {
-    createReservation(input: $input) {
-      _id
+export const ADD_RESERVATION = gql`
+  mutation addReservation($input: ReservationInput!) {
+    addReservation(input: $input) {
+      createdAt
       name
       email
       phone
       date
       time
       guests
-      specialRequests
-      reservationId
+      notes
+      resaurantId
+      time
     }
   }
 `;

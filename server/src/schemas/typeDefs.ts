@@ -1,12 +1,14 @@
 export const typeDefs = `#graphql
   type Query {
-    menus: [Menu]!
-    menu(_id:ID): Menu
+    allMenuItems: [MenuItem!]!
+    menu(_id:ID): Menu!
     menuItems: [MenuItem]!
-    menuItem(_id: ID!): MenuItem
+    menuItem(_id: ID!): MenuItem!
     reservations: [Reservation]!
     getReservationsByStatus(status: ReservationStatus!): [Reservation]!
-    getReservation(_id: ID!): Reservation
+    getReservation(_id: ID!): Reservation!
+    getCurrentUser: User!
+    getUserMenu: [Menu]!
   }
 
   type MenuItem {
@@ -19,6 +21,7 @@ export const typeDefs = `#graphql
     isAvailable: Boolean!
     restaurantId: Restaurant!
     trending: Boolean!
+    lastUpdated: String!
   }
 
   input MenuItemInput {
@@ -50,8 +53,8 @@ export const typeDefs = `#graphql
     date: String!
     time: String!
     guests: Int!
-    specialRequests: String
-    reservationId: String!
+    notes: String
+    reservationId: String
     status: ReservationStatus!
     createdAt: String!
   }

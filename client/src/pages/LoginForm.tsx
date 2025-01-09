@@ -44,6 +44,7 @@ const Login = () => {
       localStorage.setItem('token', token);
       window.dispatchEvent(new Event('authChange'));
       navigate('/');
+      window.location.reload();
     } catch (err: any) {
       console.error('Failed to login', err);
       setError('Invalid email or password. Please try again.');

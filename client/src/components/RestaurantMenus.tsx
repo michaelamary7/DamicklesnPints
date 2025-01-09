@@ -4,6 +4,7 @@ import { GET_ALL_MENUS } from '../graphql/queries';
 import { Card, Col, Row, Typography, Image, Tag, Spin, Alert, Input, Select, Space } from 'antd';
 import debounce from 'lodash/debounce';
 
+
 const { Title, Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;

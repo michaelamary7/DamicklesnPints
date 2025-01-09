@@ -68,31 +68,24 @@ const signToken: (username: string, email: string, _id: unknown) => string = (us
 }
 export const resolvers = {
     Query: {
-        menus: async () => {
+        allMenuItems: async () => {
             try {
-                const menuItems = await MenuItem.find().populate('restaurantId');
-                const restaurantMenus = menuItems.reduce((acc: { [key: string]: any }, item) => {
-                    const restaurantId = (item.restaurantId as any)?._id.toString();
-                    if (!acc[restaurantId]) {
-                        acc[restaurantId] = {
-                            _id: restaurantId,
-                            items: [],
-                            restaurantId: item.restaurantId,
-                            lastUpdated: new Date().toISOString()
-                        };
-                    }
-                    acc[restaurantId].items.push(item);
-                    return acc;
-                }, {});
-    
-                return Object.values(restaurantMenus);
+              const menuItems = await MenuItem.find().populate('restaurantId');
+              console.log('Fetched menu items:', menuItems); // Debugging log
+              return menuItems;
             } catch (error) {
-                throw new Error('Failed to fetch menus');
+              if (error instanceof Error) {
+                console.error('Error fetching menus:', error.message); // Log the exact error
+              } else {
+                console.error('Error fetching menus:', error); // Log the error if it's not an instance of Error
+              }
+              throw new Error('Failed to fetch menus');
             }
         },
+        
         menu: async (_: any, { _id }: { _id: string }) => {
             try {
-                return await MenuItem.findById(_id).populate('restaurantId');
+                return await MenuItem.findById(_id).populate('restaurant');
             } catch (error) {
                 throw new Error('Failed to fetch menu');
             }
@@ -130,6 +123,31 @@ export const resolvers = {
                 return await Reservation.findOne({ reservationId });
             } catch (error) {
                 throw new Error('Failed to fetch reservation');
+            }
+        },
+        getCurrentUser: async (_: any, __: any, { user }: any) => {
+            try {
+                if (!user?._id) {
+                    return null;
+                }
+                return await User
+            }
+            catch (error) {
+                throw new Error('Failed to fetch user');
+            }
+        },
+        getUserMenu: async (_: any, __: any, { user, models }: any) => {
+            try {
+                if (!user?._id) {
+                    return null;
+                }
+                if (!models?.Menu) {
+                    console.error('Menu model not found in context');
+                    throw new Error('Internal server error');
+                }
+                return await models.Menu.find({ 'restaurantId': user._id });
+            } catch (error) {
+                throw new Error('Failed to fetch user menu');
             }
         },
     },

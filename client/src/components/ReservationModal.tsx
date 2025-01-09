@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, Form, Input, DatePicker, TimePicker, InputNumber, Button, message } from 'antd';
 import dayjs from 'dayjs';
-import axios from 'axios';
-//import { createReservation } from '../utils/API';
+import { ADD_RESERVATION } from '../graphql/mutation';
+import { useMutation } from '@apollo/client';
 
 
 interface ReservationModalProps {
@@ -15,6 +15,7 @@ interface ReservationModalProps {
 const ReservationModal: React.FC<ReservationModalProps> = ({ isVisible, onClose, restaurantId }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [addReservation] = useMutation(ADD_RESERVATION);
 
   const handleSubmit = async (values: any) => {
     try {
@@ -30,7 +31,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isVisible, onClose,
       };
 
       // Send to API
-       await axios.post('/api/reservations', reservation);
+     await addReservation({ variables: { ...reservation } });
       message.success('Reservation request submitted successfully!');
       form.resetFields();
       onClose();

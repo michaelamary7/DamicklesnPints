@@ -28,7 +28,7 @@ export const GET_ME = gql`
 export const GET_MENU_ITEMS = gql`
   query GetMenuItems {
     menuItems {
-      id
+      _id
       name
       description
       price
@@ -44,9 +44,22 @@ export const GET_USER_MENU = gql`
   query GetUserMenu {
     getUserMenu {
       _id
-      name
-      description
-      price
+      items {
+        _id
+        name
+        description
+        price
+        category
+        imageURL
+        isAvailable
+        trending
+      }
+      restaurantId {
+        _id
+        name
+        location
+      }
+      lastUpdated
     }
   }
 `;
@@ -70,18 +83,15 @@ export const GET_RESTAURANTS = gql`
 
 export const GET_ALL_MENUS = gql`
   query GetAllMenus {
-    menus {
+    allMenuItems {
       _id
-      items {
-        _id
-        name
-        description
-        price
-        category
-        imageURL
-        isAvailable
-        trending
-      }
+      name
+      description
+      price
+      category
+      imageURL
+      isAvailable
+      trending
       restaurantId {
         _id
         name
@@ -108,4 +118,31 @@ export const GET_TRENDING_MENU_ITEMS = gql`
     }
   }
 }
+`;
+
+export const GET_CURRENT_USER = gql`
+  query GetCurrentUser {
+    getCurrentUser {
+      _id
+      username
+    }
+  }
+`;
+
+export const GET_RESERVATIONS = gql`
+  query GetReservations {
+    reservations {
+      _id
+      name
+      email
+      phone
+      date
+      time
+      guests
+      notes
+      reservationId
+      status
+      createdAt
+    }
+  }
 `;

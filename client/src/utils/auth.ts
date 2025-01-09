@@ -97,12 +97,12 @@ class AuthService {
 
 // This retrieves the token from local storage
   getToken(): string | null{
-    return localStorage.getItem('id_token');
+    return localStorage.getItem('token');
   }
 
 // This stores the token in local storage and redirects to the dashboard page
-  login(idToken: string): void {
-    localStorage.setItem('id_token', idToken);
+  login(token: string): void {
+    localStorage.setItem('token', token);
     this.lastActivityTime = Date.now();
     this.resetInactivityTimer();
     window.location.assign('/menu');
@@ -115,7 +115,7 @@ class AuthService {
       this.inactivityTimer = null;
     }
     
-    localStorage.removeItem('id_token');
+    localStorage.removeItem('token');
     this.lastActivityTime = 0;
 
     window.location.assign('/');
